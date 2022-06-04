@@ -1,0 +1,9 @@
+{
+  "group": "pl.memexurer.gaming",
+  "name": "CloudNet-Gaming",
+  "version": "1.0",
+  "author": "Memexurer",
+  "website": "https://cloudnetservice.eu",
+  "description": "Gaming",
+  "main": "pl.memexurer.gaming.GamingModule"
+}

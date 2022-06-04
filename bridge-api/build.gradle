@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'pl.playcastle'
+version '1.0-SNAPSHOT'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.cloudnetservice.eu/repository/releases/' }
+}
+
+dependencies {
+    compileOnly 'de.dytanic.cloudnet:cloudnet-driver:3.4.3-RELEASE'
+    compileOnly 'de.dytanic.cloudnet:cloudnet-wrapper-jvm:3.4.3-RELEASE'
+    compileOnly 'de.dytanic.cloudnet:cloudnet-bridge:3.4.3-RELEASE'
+}
