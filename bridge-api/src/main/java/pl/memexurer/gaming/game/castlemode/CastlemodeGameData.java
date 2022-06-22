@@ -7,20 +7,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
-import pl.memexurer.gaming.game.GameData;
+import pl.memexurer.gaming.game.generic.GenericGameData;
+import pl.memexurer.gaming.game.generic.GenericGameState;
 
-public class CastlemodeGameData implements GameData {
+public class CastlemodeGameData implements GenericGameData {
 
   private Collection<UUID> team1, team2, spectators;
   private Collection<CastlemodeKill> killList;
-  private CastlemodeGameState gameState;
+  private GenericGameState gameState;
   private int flagCapturePoints;
   private long gameEnd;
   private int playerCount;
   private int maxPlayerCount;
 
   public CastlemodeGameData(Collection<UUID> team1, Collection<UUID> team2,
-      Collection<UUID> spectators, List<CastlemodeKill> killList, CastlemodeGameState gameState,
+      Collection<UUID> spectators, List<CastlemodeKill> killList, GenericGameState gameState,
       int flagCapturePoints, long gameEnd, int playerCount, int maxPlayerCount) {
     this.team1 = team1;
     this.team2 = team2;
@@ -35,7 +36,7 @@ public class CastlemodeGameData implements GameData {
 
   public CastlemodeGameData() {
     this(new HashSet<>(), new HashSet<>(), new HashSet<>(), new ArrayList<>(),
-        CastlemodeGameState.WAITING, 0, 0, 0, 0);
+        GenericGameState.WAITING, 0, 0, 0, 0);
   }
 
   public Collection<UUID> getTeam1() {
@@ -54,7 +55,7 @@ public class CastlemodeGameData implements GameData {
     return Collections.unmodifiableCollection(killList);
   }
 
-  public CastlemodeGameState getGameState() {
+  public GenericGameState getGameState() {
     return gameState;
   }
 
@@ -93,7 +94,7 @@ public class CastlemodeGameData implements GameData {
     this.team2 = buffer.readUUIDCollection();
     this.spectators = buffer.readUUIDCollection();
     this.killList = buffer.readObjectCollection(CastlemodeKill.class);
-    this.gameState = buffer.readEnumConstant(CastlemodeGameState.class);
+    this.gameState = buffer.readEnumConstant(GenericGameState.class);
     this.flagCapturePoints = buffer.readInt();
     this.gameEnd = buffer.readLong();
     this.playerCount = buffer.readInt();

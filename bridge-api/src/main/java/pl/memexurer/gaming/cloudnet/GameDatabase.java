@@ -8,7 +8,7 @@ import pl.memexurer.gaming.game.Game;
 import pl.memexurer.gaming.game.GameData;
 import pl.memexurer.gaming.game.GameModifiers;
 import pl.memexurer.gaming.game.castlemode.CastlemodeGameData;
-import pl.memexurer.gaming.game.castlemode.CastlemodeGameModifiers;
+import pl.memexurer.gaming.game.generic.GenericGameModifiers;
 
 public class GameDatabase {
 
@@ -65,12 +65,12 @@ public class GameDatabase {
 
     private String parent;
     private CastlemodeGameData data;
-    private CastlemodeGameModifiers modifiers;
+    private GenericGameModifiers modifiers;
 
     private WrappedGame(String parent, GameData data, GameModifiers modifiers) {
       this.parent = parent;
       this.data = (CastlemodeGameData) data;
-      this.modifiers = (CastlemodeGameModifiers) modifiers;
+      this.modifiers = (GenericGameModifiers) modifiers;
     }
 
     public WrappedGame() {

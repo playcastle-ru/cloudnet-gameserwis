@@ -14,6 +14,7 @@ public class GamingModule extends DriverModule {
   public void init() {
     this.gameDatabase = GameDatabase.createGameDatabase("Castlemode", getDriver());
     getDriver().getEventManager().registerListener(this);
+    getDriver().getEventManager().registerListener(new PluginIncludeListener());
     getLogger().info("Gaming module has started!");
   }
 

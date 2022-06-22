@@ -2,7 +2,7 @@ package pl.memexurer.gaming.cloudnet.packet;
 
 import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
 import pl.memexurer.gaming.game.GameModifiers;
-import pl.memexurer.gaming.game.castlemode.CastlemodeGameModifiers;
+import pl.memexurer.gaming.game.generic.GenericGameModifiers;
 
 public class GameCreationRequest extends GameRequest {
 
@@ -29,6 +29,6 @@ public class GameCreationRequest extends GameRequest {
   @Override
   public void read(ProtocolBuffer buffer) {
     super.read(buffer);
-    this.modifiers = buffer.readObject(CastlemodeGameModifiers.class);
+    this.modifiers = buffer.readObject(GenericGameModifiers.class);
   }
 }

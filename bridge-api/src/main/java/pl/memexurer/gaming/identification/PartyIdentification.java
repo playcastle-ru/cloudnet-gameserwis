@@ -8,16 +8,13 @@ public final class PartyIdentification implements UserIdentification {
 
   private UUID owner;
   private Collection<UUID> members;
-  private PartySettings partySettings;
 
   PartyIdentification() {
   }
 
-  public PartyIdentification(UUID owner, Collection<UUID> members,
-      PartySettings partySettings) {
+  public PartyIdentification(UUID owner, Collection<UUID> members) {
     this.owner = owner;
     this.members = members;
-    this.partySettings = partySettings;
   }
 
   @Override
@@ -29,22 +26,16 @@ public final class PartyIdentification implements UserIdentification {
     return owner;
   }
 
-  public PartySettings getPartySettings() {
-    return partySettings;
-  }
-
   @Override
   public void write(ProtocolBuffer buffer) {
     buffer.writeBoolean(true);
     buffer.writeUUID(owner);
     buffer.writeUUIDCollection(members);
-    buffer.writeObject(partySettings);
   }
 
   @Override
   public void read(ProtocolBuffer buffer) {
     this.owner = buffer.readUUID();
     this.members = buffer.readUUIDCollection();
-    this.partySettings = buffer.readObject(PartySettings.class);
   }
 }

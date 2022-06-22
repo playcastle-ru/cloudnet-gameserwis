@@ -40,7 +40,7 @@ public class CloudNetServerPool implements ServerPool {
   @Override
   public Collection<? extends Server> getAvailableServers() {
     return driver.getCloudServiceProvider().getCloudServicesByGroup(groupName)
-        .stream().map(CloudNetServer::new).toList();
+        .stream().map(ManagedServer::new).toList();
   }
 
   @Override
@@ -84,7 +84,7 @@ public class CloudNetServerPool implements ServerPool {
 
   @Override
   public Optional<? extends Server> findServer(String id) {
-    return Optional.of(new CloudNetServer(driver.getCloudServiceProvider().getCloudServiceByName(id)));
+    return Optional.of(new ManagedServer(driver.getCloudServiceProvider().getCloudServiceByName(id)));
   }
 
   @Override

@@ -13,10 +13,14 @@ public interface UserIdentification extends SerializableObject {
 
   default void joinServer(String id) {
     for(var member: getMembers()) {
-      CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class)
-          .getPlayerExecutor(member)
-          .connect(id);
+      joinServer(member, id);
     }
+  }
+
+  static void joinServer(UUID uuid, String id) {
+    CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class)
+        .getPlayerExecutor(uuid)
+        .connect(id);
   }
 
   static UserIdentification decode(ProtocolBuffer buffer) {

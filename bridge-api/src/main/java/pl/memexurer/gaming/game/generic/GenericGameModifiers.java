@@ -1,18 +1,18 @@
-package pl.memexurer.gaming.game.castlemode;
+package pl.memexurer.gaming.game.generic;
 
 import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
 import de.dytanic.cloudnet.driver.serialization.SerializableObject;
 import pl.memexurer.gaming.game.GameModifiers;
 
-public final class CastlemodeGameModifiers implements GameModifiers, SerializableObject {
+public final class GenericGameModifiers implements GameModifiers, SerializableObject {
 
   private String mapName;
 
-  public CastlemodeGameModifiers(String mapName) {
+  public GenericGameModifiers(String mapName) {
     this.mapName = mapName;
   }
 
-  public CastlemodeGameModifiers() {
+  public GenericGameModifiers() {
   }
 
   public String getMapName() {

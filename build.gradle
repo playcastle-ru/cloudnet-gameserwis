@@ -8,10 +8,20 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven { url 'https://repo.cloudnetservice.eu/repository/releases/' }
+    maven {
+        url "https://repo.velocitypowered.com/snapshots/"
+    }
 }
 
 dependencies {
     compileOnly 'de.dytanic.cloudnet:cloudnet-driver:3.4+'
+    compileOnly 'de.dytanic.cloudnet:cloudnet-bridge:3.4+'
+    compileOnly 'de.dytanic.cloudnet:cloudnet:3.4+'
+    compileOnly 'pl.memexurer:velocity-party-plugin:1.0-SNAPSHOT:all'
+    compileOnly 'com.velocitypowered:velocity-api:3+'
+    annotationProcessor 'com.velocitypowered:velocity-api:3+'
+
     implementation project(':bridge-api')
 }

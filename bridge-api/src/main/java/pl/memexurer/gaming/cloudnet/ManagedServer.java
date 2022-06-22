@@ -12,11 +12,11 @@ import pl.memexurer.gaming.game.GameModifiers;
 import pl.memexurer.gaming.identification.UserIdentification;
 import pl.memexurer.gaming.server.Server;
 
-public class CloudNetServer implements Server {
+public class ManagedServer implements Server {
 
   private final ServiceInfoSnapshot snapshot;
 
-  public CloudNetServer(ServiceInfoSnapshot snapshot) {
+  public ManagedServer(ServiceInfoSnapshot snapshot) {
     this.snapshot = snapshot;
   }
 
@@ -50,13 +50,17 @@ public class CloudNetServer implements Server {
   @Override
   public CompletableFuture<Void> createConnectionRequest(String gameId,
       UserIdentification userIdentification) {
+    return createConnectionRequest(getId(), gameId, userIdentification);
+  }
+
+  public static CompletableFuture<Void> createConnectionRequest(String serverId, String gameId, UserIdentification identification) {
     var cf = new CompletableFuture<Void>();
 
     ChannelMessage.builder()
         .channel(CloudNetServerPool.GAME_JOIN_CHANNEL)
         .buffer(ProtocolBuffer.create()
-            .writeObject(new GameJoinRequest(gameId, userIdentification)))
-        .targetService(getId())
+            .writeObject(new GameJoinRequest(gameId, identification)))
+        .targetService(serverId)
         .build().sendSingleQueryAsync()
         .onComplete(x -> {
           if (x.getMessage() != null) {
@@ -66,6 +70,6 @@ public class CloudNetServer implements Server {
           }
         })
         .onFailure(CompletableFuture::failedFuture);
-    return cf.thenAccept(v -> userIdentification.joinServer(getId()));
+    return cf.thenAccept(v -> identification.joinServer(serverId));
   }
 }
