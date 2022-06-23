@@ -1,4 +1,5 @@
 rootProject.name = 'cloudnet-gameserver'
 include 'bridge-api'
 include 'bridge-module'
+include 'chat-module'
 
