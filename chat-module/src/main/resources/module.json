@@ -1,9 +1,0 @@
-{
-  "group": "pl.memexurer.gaming.chat",
-  "name": "CloudNet-GamingChat",
-  "version": "1.0",
-  "author": "Memexurer",
-  "website": "https://cloudnetservice.eu",
-  "description": "Gaming",
-  "main": "pl.memexurer.gaming.chat.GamingChatModule"
-}

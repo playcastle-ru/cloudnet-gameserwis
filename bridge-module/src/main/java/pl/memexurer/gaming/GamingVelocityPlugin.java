@@ -50,6 +50,15 @@ public class GamingVelocityPlugin {
     }
   }
 
+  @Subscribe // player forwarding for servers managed by this plugin
+  public void onSendMessage(VelocityChannelMessageReceiveEvent event) {
+    if (event.getChannel().equals("rejoin_player")) {
+      server.getPlayer(event.getBuffer().readUUID()).orElseThrow()
+          .createConnectionRequest(server.getServer(event.getBuffer().readString()).orElseThrow())
+          .fireAndForget();
+    }
+  }
+
   /*
   player forwarding for unmanaged servers without any party plugins (disabled for now)
   @Subscribe

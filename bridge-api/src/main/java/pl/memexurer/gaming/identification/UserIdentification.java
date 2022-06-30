@@ -18,9 +18,15 @@ public interface UserIdentification extends SerializableObject {
   }
 
   static void joinServer(UUID uuid, String id) {
-    CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class)
-        .getPlayerExecutor(uuid)
-        .connect(id);
+    var player = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class)
+        .getOnlinePlayer(uuid);
+    if(player == null)
+      throw new IllegalArgumentException("Fuck you! Specified player is not here.");
+
+    if(player.getConnectedService().getServerName().equals(id))
+      return;
+
+    player.getPlayerExecutor().connect(id);
   }
 
   static UserIdentification decode(ProtocolBuffer buffer) {

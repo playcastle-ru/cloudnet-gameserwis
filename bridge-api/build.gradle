@@ -8,4 +8,15 @@ publishing {
             from components.java
         }
     }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/playcastle-ru/cloudnet-gameserwis"
+            credentials {
+                username = GITHUB_ACTOR
+                password = GITHUB_TOKEN
+            }
+        }
+    }
 }

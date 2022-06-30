@@ -7,8 +7,16 @@ import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
+import pl.memexurer.jedisdatasource.api.JedisDataSource;
+import redis.clients.jedis.params.SetParams;
 
 public class MsgCommand implements SimpleCommand {
+
+  private final JedisDataSource dataSource;
+
+  public MsgCommand(JedisDataSource dataSource) {
+    this.dataSource = dataSource;
+  }
 
   @Override
   public void execute(Invocation invocation) {
@@ -33,13 +41,14 @@ public class MsgCommand implements SimpleCommand {
       exception.printStackTrace();
       return;
     }
-
-    conn.set("reply:" + foundPlayer.getUniqueId(),
-        String.valueOf(player.getUniqueId()),
-        SetParams.setParams().ex(15));
-    conn.set("reply:" + player.getUniqueId(),
-        String.valueOf(foundPlayer.getUniqueId()),
-        SetParams.setParams().ex(15));
+    dataSource.open().thenAccept(conn -> {
+      conn.set("reply:" + foundPlayer.getUniqueId(),
+          String.valueOf(player.getUniqueId()),
+          SetParams.setParams().ex(15));
+      conn.set("reply:" + player.getUniqueId(),
+          String.valueOf(foundPlayer.getUniqueId()),
+          SetParams.setParams().ex(15));
+    });
 
     invocation.source()
         .sendMessage(Component.text("ty -> " + foundPlayer.getName() + ": " + message));

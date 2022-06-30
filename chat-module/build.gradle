@@ -9,5 +9,5 @@ dependencies {
     compileOnly 'com.velocitypowered:velocity-api:3+'
     annotationProcessor 'com.velocitypowered:velocity-api:3+'
 
-    compileOnly 'pl.memexurer:jedis-datasource-api:1.1-SNAPSHOT'
+    compileOnly 'pl.memexurer:jedis-datasource-api:1+'
 }
