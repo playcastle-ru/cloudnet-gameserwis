@@ -9,6 +9,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import pl.memexurer.gaming.chat.commands.MsgCommand;
 import pl.memexurer.gaming.chat.commands.ReplyCommand;
 import pl.memexurer.gaming.chat.commands.SimpleCommandMeta;
+import pl.memexurer.gaming.chat.commands.SpectateCommand;
 import pl.memexurer.jedisdatasource.api.JedisDataSource;
 import pl.memexurer.jedisdatasource.api.JedisDataSourceProvider;
 
@@ -39,6 +40,7 @@ public class GamingChatVelocityPlugin {
         dataSource));
     server.getCommandManager().register(new SimpleCommandMeta(this, "reply", "r"), new ReplyCommand(
         dataSource));
+    server.getCommandManager().register(new SimpleCommandMeta(this, "spect", "spectate"), new SpectateCommand());
   }
 
 }
