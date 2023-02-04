@@ -1,10 +1,11 @@
 package pl.memexurer.gaming.game.castlemode;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import de.dytanic.cloudnet.driver.serialization.SerializableObject;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
+
 import java.util.UUID;
 
-public final class CastlemodeKill implements SerializableObject {
+public final class CastlemodeKill implements DataBufable {
 
   private UUID victim;
   private UUID killer;
@@ -32,18 +33,17 @@ public final class CastlemodeKill implements SerializableObject {
     return type;
   }
 
-
   @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeEnumConstant(type);
-    buffer.writeUUID(victim);
-    buffer.writeUUID(killer);
+  public void writeData(DataBuf.Mutable dataBuf) {
+    dataBuf.writeObject(type)
+            .writeUniqueId(victim)
+            .writeUniqueId(killer);
   }
 
   @Override
-  public void read(ProtocolBuffer buffer) {
-    this.type = buffer.readEnumConstant(CastlemodeKillType.class);
-    this.victim = buffer.readUUID();
-    this.killer = buffer.readUUID();
+  public void readData(DataBuf dataBuf) {
+    this.type = dataBuf.readObject(CastlemodeKillType.class);
+    this.victim = dataBuf.readUniqueId();
+    this.killer = dataBuf.readUniqueId();
   }
 }

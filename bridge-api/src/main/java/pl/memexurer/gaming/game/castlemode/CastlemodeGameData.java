@@ -1,12 +1,9 @@
 package pl.memexurer.gaming.game.castlemode;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
+import com.google.gson.reflect.TypeToken;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
 import pl.memexurer.gaming.game.generic.GenericGameData;
 import pl.memexurer.gaming.game.generic.GenericGameState;
 
@@ -76,28 +73,28 @@ public class CastlemodeGameData implements GenericGameData {
   }
 
   @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeUUIDCollection(team1)
-        .writeUUIDCollection(team2)
-        .writeUUIDCollection(spectators)
-        .writeObjectCollection(killList)
-        .writeEnumConstant(gameState)
-        .writeInt(flagCapturePoints)
-        .writeLong(gameEnd)
-        .writeInt(playerCount)
-        .writeInt(maxPlayerCount);
+  public void writeData(DataBuf.Mutable dataBuf) {
+    dataBuf.writeObject(team1)
+            .writeObject(team2)
+            .writeObject(spectators)
+            .writeObject(killList)
+            .writeObject(gameState)
+            .writeInt(flagCapturePoints)
+            .writeLong(gameEnd)
+            .writeInt(playerCount)
+            .writeInt(maxPlayerCount);
   }
 
   @Override
-  public void read(ProtocolBuffer buffer) {
-    this.team1 = buffer.readUUIDCollection();
-    this.team2 = buffer.readUUIDCollection();
-    this.spectators = buffer.readUUIDCollection();
-    this.killList = buffer.readObjectCollection(CastlemodeKill.class);
-    this.gameState = buffer.readEnumConstant(GenericGameState.class);
-    this.flagCapturePoints = buffer.readInt();
-    this.gameEnd = buffer.readLong();
-    this.playerCount = buffer.readInt();
-    this.maxPlayerCount = buffer.readInt();
+  public void readData(DataBuf dataBuf) {
+    this.team1 = dataBuf.readObject(new TypeToken<List<UUID>>(){}.getType());
+    this.team2 = dataBuf.readObject(new TypeToken<List<UUID>>(){}.getType());
+    this.spectators = dataBuf.readObject(new TypeToken<List<UUID>>(){}.getType());
+    this.killList =  dataBuf.readObject(new TypeToken<List<CastlemodeKill>>(){}.getType());
+    this.gameState = dataBuf.readObject(GenericGameState.class);
+    this.flagCapturePoints = dataBuf.readInt();
+    this.gameEnd = dataBuf.readLong();
+    this.playerCount = dataBuf.readInt();
+    this.maxPlayerCount = dataBuf.readInt();
   }
 }

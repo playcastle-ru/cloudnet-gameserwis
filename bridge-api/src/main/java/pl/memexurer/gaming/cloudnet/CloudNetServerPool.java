@@ -1,7 +1,5 @@
 package pl.memexurer.gaming.cloudnet;
 
-import com.google.common.base.Strings;
-import de.dytanic.cloudnet.driver.CloudNetDriver;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +7,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
+import eu.cloudnetservice.driver.database.DatabaseProvider;
+import eu.cloudnetservice.driver.provider.CloudServiceProvider;
 import pl.memexurer.gaming.game.Game;
 import pl.memexurer.gaming.game.GameModifiers;
 import pl.memexurer.gaming.identification.UserIdentification;
@@ -20,26 +21,39 @@ public class CloudNetServerPool implements ServerPool {
   public static final String GAME_JOIN_CHANNEL = "game_join";
 
   private final GameDatabase gameDatabase;
-  private final CloudNetDriver driver;
+  private final CloudServiceProvider serviceProvider;
 
   private final String groupName;
 
-  public CloudNetServerPool(CloudNetDriver driver, String groupName) {
-    this.driver = driver;
-    this.gameDatabase = GameDatabase.createGameDatabase(groupName, driver);
+  public CloudNetServerPool(String groupName, DatabaseProvider databaseProvider, CloudServiceProvider serviceProvider) {
+    this.serviceProvider = serviceProvider;
+    this.gameDatabase = GameDatabase.createGameDatabase(groupName, databaseProvider);
     this.groupName = groupName;
   }
 
   private static String getGameId(Server server) {
-    return Strings.padStart(
+    return padLeftZeros(
         Integer.toHexString(
             server.getId().hashCode() ^ ThreadLocalRandom
-                .current().nextInt(65536)), 4, '0');
+                .current().nextInt(65536)), 4);
+  }
+
+  private static String padLeftZeros(String inputString, int length) {
+    if (inputString.length() >= length) {
+      return inputString;
+    }
+    StringBuilder sb = new StringBuilder();
+    while (sb.length() < length - inputString.length()) {
+      sb.append('0');
+    }
+    sb.append(inputString);
+
+    return sb.toString();
   }
 
   @Override
   public Collection<? extends Server> getAvailableServers() {
-    return driver.getCloudServiceProvider().getCloudServicesByGroup(groupName)
+    return serviceProvider.servicesByGroup(groupName)
         .stream().map(ManagedServer::new).toList();
   }
 
@@ -66,7 +80,7 @@ public class CloudNetServerPool implements ServerPool {
               })
               .join();
         } catch (Throwable throwable) {
-          driver.getLogger().error("An error has encountered in server resolution", throwable);
+          throwable.printStackTrace();
         }
       }
       throw new CompletionException(
@@ -84,11 +98,15 @@ public class CloudNetServerPool implements ServerPool {
 
   @Override
   public Optional<? extends Server> findServer(String id) {
-    return Optional.of(new ManagedServer(driver.getCloudServiceProvider().getCloudServiceByName(id)));
+    return Optional.of(new ManagedServer(serviceProvider.serviceByName(id)));
   }
 
   @Override
   public Optional<? extends Game> findGame(String id) {
     return Optional.ofNullable(gameDatabase.getById(id));
+  }
+
+  public GameDatabase getGameDatabase() {
+    return gameDatabase;
   }
 }

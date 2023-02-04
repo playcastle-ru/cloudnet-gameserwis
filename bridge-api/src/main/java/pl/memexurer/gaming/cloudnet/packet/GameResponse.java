@@ -1,49 +1,64 @@
 package pl.memexurer.gaming.cloudnet.packet;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import de.dytanic.cloudnet.driver.serialization.SerializableObject;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
 
-public abstract class GameResponse<T extends SerializableObject> implements SerializableObject {
+public abstract class GameResponse<T extends DataBufable> implements DataBufable {
 
-  private final Class<T> baseClass;
-  protected T value;
-  protected String error;
+    private final Class<T> baseClass;
+    protected T value;
+    protected String error;
 
-  protected GameResponse(Class<T> baseClass) {
-    this.baseClass = baseClass;
-  }
+    protected GameResponse(Class<T> baseClass) {
+        this.baseClass = baseClass;
+    }
 
-  protected GameResponse(Class<T> baseClass, String error) {
-    if(error == null)
-      throw new IllegalArgumentException("error cannot be null, fuck off");
-    this.baseClass = baseClass;
-    this.error = error;
-  }
+    protected GameResponse(Class<T> baseClass, String error) {
+        if (error == null)
+            throw new IllegalArgumentException("error cannot be null, fuck off");
+        this.baseClass = baseClass;
+        this.error = error;
+    }
 
-  protected GameResponse(Class<T> baseClass, T value) {
-    if(value == null)
-      throw new IllegalArgumentException("value cannot be null, fuck off");
-    this.baseClass = baseClass;
-    this.value = value;
-  }
+    protected GameResponse(Class<T> baseClass, T value) {
+        if (value == null)
+            throw new IllegalArgumentException("value cannot be null, fuck off");
+        this.baseClass = baseClass;
+        this.value = value;
+    }
 
-  public T getValue() {
-    return value;
-  }
+    public T getValue() {
+        return value;
+    }
 
-  public String getError() {
-    return error;
-  }
+    public String getError() {
+        return error;
+    }
 
-  @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeOptionalObject(value);
-    buffer.writeOptionalString(error);
-  }
+    @Override
+    public void writeData(DataBuf.Mutable dataBuf) {
+        if (value == null) {
+            dataBuf.writeBoolean(false);
+        } else {
+            dataBuf.writeBoolean(true);
+            dataBuf.writeObject(value);
+        }
 
-  @Override
-  public void read(ProtocolBuffer buffer) {
-    this.value = buffer.readOptionalObject(baseClass);
-    this.error = buffer.readOptionalString();
-  }
+        if (error == null) {
+            dataBuf.writeBoolean(false);
+        } else {
+            dataBuf.writeBoolean(true);
+            dataBuf.writeString(error);
+        }
+    }
+
+    @Override
+    public void readData(DataBuf dataBuf) {
+        if (dataBuf.readBoolean()) {
+            this.value = dataBuf.readObject(baseClass);
+        }
+        if (dataBuf.readBoolean()) {
+            this.error = dataBuf.readString();
+        }
+    }
 }

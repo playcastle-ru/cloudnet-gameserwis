@@ -6,6 +6,11 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import eu.cloudnetservice.driver.inject.InjectionLayer;
+import eu.cloudnetservice.driver.provider.CloudServiceProvider;
+import eu.cloudnetservice.driver.provider.ServiceTaskProvider;
+import eu.cloudnetservice.driver.registry.ServiceRegistry;
+import eu.cloudnetservice.modules.bridge.player.PlayerManager;
 import pl.memexurer.gaming.chat.commands.MsgCommand;
 import pl.memexurer.gaming.chat.commands.ReplyCommand;
 import pl.memexurer.gaming.chat.commands.SimpleCommandMeta;
@@ -36,11 +41,15 @@ public class GamingChatVelocityPlugin {
   @Subscribe
   public void onInit(ProxyInitializeEvent event) {
     var dataSource = findDataSource(server);
+    var playerManager = InjectionLayer.ext().instance(ServiceRegistry.class)
+            .firstProvider(PlayerManager.class);
+    var serviceProvider = InjectionLayer.ext().instance(CloudServiceProvider.class);
+
     server.getCommandManager().register(new SimpleCommandMeta(this, "msg", "pm"), new MsgCommand(
-        dataSource));
+        dataSource, playerManager));
     server.getCommandManager().register(new SimpleCommandMeta(this, "reply", "r"), new ReplyCommand(
-        dataSource));
-    server.getCommandManager().register(new SimpleCommandMeta(this, "spect", "spectate"), new SpectateCommand());
+        dataSource, playerManager));
+    server.getCommandManager().register(new SimpleCommandMeta(this, "spect", "spectate"), new SpectateCommand(playerManager, serviceProvider));
   }
 
 }

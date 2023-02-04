@@ -1,38 +1,39 @@
 package pl.memexurer.gaming.identification;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
 public final class PlayerIdentification implements UserIdentification {
 
-  private UUID user;
+    private UUID user;
 
-  public PlayerIdentification(UUID user) {
-    this.user = user;
-  }
+    public PlayerIdentification(UUID user) {
+        this.user = user;
+    }
 
-  PlayerIdentification() {
-  }
+    PlayerIdentification() {
+    }
 
-  @Override
-  public Collection<UUID> getMembers() {
-    return Collections.singletonList(user);
-  }
+    @Override
+    public Collection<UUID> getMembers() {
+        return Collections.singletonList(user);
+    }
 
-  @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeBoolean(false);
-    buffer.writeUUID(user);
-  }
+    public UUID getUser() {
+        return user;
+    }
 
-  @Override
-  public void read(ProtocolBuffer buffer) {
-    this.user = buffer.readUUID();
-  }
+    @Override
+    public void writeData(DataBuf.Mutable dataBuf) {
+        dataBuf.writeBoolean(false);
+        dataBuf.writeUniqueId(user);
+    }
 
-  public UUID getUser() {
-    return user;
-  }
+    @Override
+    public void readData(DataBuf dataBuf) {
+        this.user = dataBuf.readUniqueId();
+    }
 }

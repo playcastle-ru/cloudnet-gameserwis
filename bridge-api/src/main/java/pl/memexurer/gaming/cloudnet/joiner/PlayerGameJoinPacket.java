@@ -1,68 +1,59 @@
 package pl.memexurer.gaming.cloudnet.joiner;
 
-import de.dytanic.cloudnet.driver.CloudNetDriver;
-import de.dytanic.cloudnet.driver.channel.ChannelMessage;
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import de.dytanic.cloudnet.driver.serialization.SerializableObject;
-import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
-import java.util.UUID;
+import eu.cloudnetservice.driver.channel.ChannelMessage;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
+import eu.cloudnetservice.modules.bridge.node.player.NodePlayerManager;
+import eu.cloudnetservice.modules.bridge.player.PlayerManager;
 import pl.memexurer.gaming.game.Game;
 
-public class PlayerGameJoinPacket implements SerializableObject {
-  public static final String CHANNEL = "7yOPE5LvpkynNqCk7nLEwl";
+import java.util.UUID;
 
-  private UUID uuid;
-  private String serverId;
-  private String gameId;
+public class PlayerGameJoinPacket implements DataBufable {
+    public static final String CHANNEL = "7yOPE5LvpkynNqCk7nLEwl";
 
-  private PlayerGameJoinPacket(UUID uuid, String serverId, String gameId) {
-    this.uuid = uuid;
-    this.serverId = serverId;
-    this.gameId = gameId;
-  }
+    private UUID uuid;
+    private String serverId;
+    private String gameId;
 
-  public PlayerGameJoinPacket() {
-  }
+    private PlayerGameJoinPacket(UUID uuid, String serverId, String gameId) {
+        this.uuid = uuid;
+        this.serverId = serverId;
+        this.gameId = gameId;
+    }
 
-  public void send() { // przepraszam za ten kod - zmusili mnie ;c
-    ChannelMessage.builder()
-        .buffer(ProtocolBuffer.create()
-            .writeObject(this))
-        .channel(CHANNEL)
-        .targetService(CloudNetDriver.getInstance().getServicesRegistry().getFirstService(
-                IPlayerManager.class)
-            .getOnlinePlayer(uuid)
-            .getLoginService().getServiceId().getName())
-        .build().send();
-  }
+    public PlayerGameJoinPacket(UUID player, Game game) {
+        this.uuid = player;
+        this.serverId = game.parent();
+        this.gameId = game.id();
+    }
 
-  @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeUUID(uuid);
-    buffer.writeString(serverId);
-    buffer.writeString(gameId);
-  }
+    public PlayerGameJoinPacket() {
+    }
 
-  @Override
-  public void read(ProtocolBuffer buffer) {
-    this.uuid = buffer.readUUID();
-    this.serverId = buffer.readString();
-    this.gameId = buffer.readString();
-  }
+    public UUID getUuid() {
+        return uuid;
+    }
 
-  public UUID getUuid() {
-    return uuid;
-  }
+    public String getServerId() {
+        return serverId;
+    }
 
-  public String getServerId() {
-    return serverId;
-  }
+    public String getGameId() {
+        return gameId;
+    }
 
-  public String getGameId() {
-    return gameId;
-  }
+    @Override
+    public void writeData(DataBuf.Mutable dataBuf) {
+        dataBuf.writeUniqueId(uuid);
+        dataBuf.writeString(serverId);
+        dataBuf.writeString(gameId);
+    }
 
-  public static void join(UUID player, Game game) {
-    new PlayerGameJoinPacket(player, game.parent(), game.id()).send();
-  }
+    @Override
+    public void readData(DataBuf dataBuf) {
+        this.uuid = dataBuf.readUniqueId();
+        this.serverId = dataBuf.readString();
+        this.gameId = dataBuf.readString();
+    }
 }

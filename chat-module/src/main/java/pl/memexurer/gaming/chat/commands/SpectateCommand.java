@@ -2,15 +2,23 @@ package pl.memexurer.gaming.chat.commands;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
-import de.dytanic.cloudnet.driver.CloudNetDriver;
-import de.dytanic.cloudnet.driver.channel.ChannelMessage;
-import de.dytanic.cloudnet.driver.channel.ChannelMessageTarget.Type;
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
-import java.util.concurrent.ThreadLocalRandom;
+
+import eu.cloudnetservice.driver.channel.ChannelMessage;
+import eu.cloudnetservice.driver.channel.ChannelMessageTarget;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.provider.CloudServiceProvider;
+import eu.cloudnetservice.modules.bridge.player.PlayerManager;
 import net.kyori.adventure.text.Component;
 
 public class SpectateCommand implements SimpleCommand {
+  private final PlayerManager playerManager;
+  private final CloudServiceProvider serviceProvider;
+
+  public SpectateCommand(PlayerManager playerManager,
+                         CloudServiceProvider serviceProvider) {
+    this.playerManager = playerManager;
+    this.serviceProvider = serviceProvider;
+  }
 
   @Override
   public void execute(Invocation invocation) {
@@ -24,10 +32,7 @@ public class SpectateCommand implements SimpleCommand {
       return;
     }
 
-    var foundPlayer = CloudNetDriver.getInstance()
-        .getServicesRegistry()
-        .getFirstService(IPlayerManager.class)
-        .getFirstOnlinePlayer(invocation.arguments()[0]);
+    var foundPlayer = playerManager.firstOnlinePlayer(invocation.arguments()[0]);
 
     if (foundPlayer == null) {
       invocation.source().sendMessage(
@@ -35,18 +40,17 @@ public class SpectateCommand implements SimpleCommand {
       return;
     }
 
-    if (foundPlayer.getConnectedService().getServerName().startsWith("Bedwars-")) {
-      var collection = CloudNetDriver.getInstance()
-          .getCloudServiceProvider()
-          .getCloudServicesByGroup("BedwarsLobby");
+    if (foundPlayer.connectedService().serverName().startsWith("Bedwars-")) {
+      var collection = serviceProvider
+          .servicesByGroup("BedwarsLobby");
 
-      var buffer = ProtocolBuffer.create();
-      buffer.writeUUID(player.getUniqueId());
-      buffer.writeString(foundPlayer.getName());
+      var buffer = DataBuf.empty();
+      buffer.writeUniqueId(player.getUniqueId());
+      buffer.writeString(foundPlayer.name());
 
       ChannelMessage.builder()
           .channel("spectate_a_nigger")
-          .target(Type.SERVICE, collection.iterator().next().getName())
+          .target(ChannelMessageTarget.Type.SERVICE, collection.iterator().next().name())
           .buffer(buffer)
           .build().send();
       invocation.source().sendMessage(Component.text("Wyslano zapytanie o spectatowanie, poczekaj..."));

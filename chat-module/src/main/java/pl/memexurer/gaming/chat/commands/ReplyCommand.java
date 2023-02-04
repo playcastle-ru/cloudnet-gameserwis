@@ -2,66 +2,67 @@ package pl.memexurer.gaming.chat.commands;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
-import de.dytanic.cloudnet.driver.CloudNetDriver;
-import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
-import java.util.UUID;
+import eu.cloudnetservice.modules.bridge.player.PlayerManager;
 import net.kyori.adventure.text.Component;
 import pl.memexurer.jedisdatasource.api.JedisDataSource;
 import redis.clients.jedis.params.SetParams;
 
+import java.util.UUID;
+
 public class ReplyCommand implements SimpleCommand {
 
-  private final JedisDataSource dataSource;
+    private final JedisDataSource dataSource;
+    private final PlayerManager playerManager;
 
-  public ReplyCommand(JedisDataSource dataSource) {
-    this.dataSource = dataSource;
-  }
-
-  @Override
-  public void execute(Invocation invocation) {
-    if (!(invocation.source() instanceof Player player)) {
-      invocation.source().sendMessage(Component.text("Spierdalaj"));
-      return;
+    public ReplyCommand(JedisDataSource dataSource,
+                        PlayerManager playerManager) {
+        this.dataSource = dataSource;
+        this.playerManager = playerManager;
     }
 
-    dataSource.open().thenAccept(conn -> {
-      String uuid = conn.get("reply:" + player.getUniqueId());
-      if (uuid == null) {
-        invocation.source()
-            .sendMessage(Component.text("Nie pisales z nikim przez ostatnie 15 mint? czy cos xd"));
-        return;
-      }
+    @Override
+    public void execute(Invocation invocation) {
+        if (!(invocation.source() instanceof Player player)) {
+            invocation.source().sendMessage(Component.text("Spierdalaj"));
+            return;
+        }
 
-      var foundPlayer = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(
-              IPlayerManager.class)
-          .getOnlinePlayer(UUID.fromString(uuid));
-      if (foundPlayer == null) {
-        invocation.source()
-            .sendMessage(Component.text("Gracz z ktorym wczesniej pisales jest offline."));
-        conn.del("reply:" + player.getUniqueId());
-        return;
-      }
+        dataSource.open().thenAccept(conn -> {
+            String uuid = conn.get("reply:" + player.getUniqueId());
+            if (uuid == null) {
+                invocation.source()
+                        .sendMessage(Component.text("Nie pisales z nikim przez ostatnie 15 mint? czy cos xd"));
+                return;
+            }
 
-      var message = String.join(" ", invocation.arguments());
-      try {
-        foundPlayer.getPlayerExecutor()
-            .sendChatMessage(player.getUsername() + " -> ty: " + message);
-      } catch (Exception exception) {
-        invocation.source().sendMessage(Component.text("Failed bruhhh"));
-        exception.printStackTrace();
-        return;
-      }
+            var foundPlayer = playerManager.onlinePlayer(UUID.fromString(uuid));
+            if (foundPlayer == null) {
+                invocation.source()
+                        .sendMessage(Component.text("Gracz z ktorym wczesniej pisales jest offline."));
+                conn.del("reply:" + player.getUniqueId());
+                return;
+            }
 
-      conn.set("reply:" + foundPlayer.getUniqueId(),
-          String.valueOf(player.getUniqueId()),
-          SetParams.setParams().ex(15));
-      conn.set("reply:" + player.getUniqueId(),
-          String.valueOf(foundPlayer.getUniqueId()),
-          SetParams.setParams().ex(15));
+            var message = String.join(" ", invocation.arguments());
+            try {
+                foundPlayer.playerExecutor()
+                        .sendChatMessage(Component.text(player.getUsername() + " -> ty: " + message));
+            } catch (Exception exception) {
+                invocation.source().sendMessage(Component.text("Failed bruhhh"));
+                exception.printStackTrace();
+                return;
+            }
 
-      invocation.source()
-          .sendMessage(Component.text("ty -> " + foundPlayer.getName() + ": " + message));
-    });
+            conn.set("reply:" + foundPlayer.uniqueId(),
+                    String.valueOf(player.getUniqueId()),
+                    SetParams.setParams().ex(15));
+            conn.set("reply:" + player.getUniqueId(),
+                    String.valueOf(foundPlayer.uniqueId()),
+                    SetParams.setParams().ex(15));
 
-  }
+            invocation.source()
+                    .sendMessage(Component.text("ty -> " + foundPlayer.name() + ": " + message));
+        });
+
+    }
 }

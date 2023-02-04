@@ -1,9 +1,9 @@
 package pl.memexurer.gaming.identification;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import de.dytanic.cloudnet.driver.serialization.SerializableObject;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
 
-public final class PartySettings implements SerializableObject {
+public final class PartySettings implements DataBufable {
 
   private boolean chatEnabled;
   private boolean isPrivate;
@@ -31,13 +31,13 @@ public final class PartySettings implements SerializableObject {
   }
 
   @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeInt(serialize());
+  public void writeData(DataBuf.Mutable dataBuf) {
+    dataBuf.writeInt(serialize());
   }
 
   @Override
-  public void read(ProtocolBuffer buffer) {
-    var settings = buffer.readInt();
+  public void readData( DataBuf dataBuf) {
+    var settings = dataBuf.readInt();
     this.chatEnabled = (settings & 1) == 1;
     this.isPrivate = (settings & 2) == 2;
   }

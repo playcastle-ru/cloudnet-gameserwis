@@ -1,34 +1,34 @@
 package pl.memexurer.gaming.cloudnet.packet;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
 import pl.memexurer.gaming.identification.UserIdentification;
 
 public class GameJoinRequest extends GameRequest {
 
-  private UserIdentification identification;
+    private UserIdentification identification;
 
-  public GameJoinRequest() {
-  }
+    public GameJoinRequest() {
+    }
 
-  public GameJoinRequest(String gameId,
-      UserIdentification identification) {
-    super(gameId);
-    this.identification = identification;
-  }
+    public GameJoinRequest(String gameId,
+                           UserIdentification identification) {
+        super(gameId);
+        this.identification = identification;
+    }
 
-  public UserIdentification getIdentification() {
-    return identification;
-  }
+    public UserIdentification getIdentification() {
+        return identification;
+    }
 
-  @Override
-  public void write(ProtocolBuffer buffer) {
-    super.write(buffer);
-    buffer.writeObject(identification);
-  }
+    @Override
+    public void writeData(DataBuf.Mutable dataBuf) {
+        super.writeData(dataBuf);
+        dataBuf.writeObject(identification);
+    }
 
-  @Override
-  public void read(ProtocolBuffer buffer) {
-    super.read(buffer);
-    this.identification = UserIdentification.decode(buffer);
-  }
+    @Override
+    public void readData(DataBuf dataBuf) {
+        super.readData(dataBuf);
+        this.identification = UserIdentification.decode(dataBuf);
+    }
 }

@@ -1,10 +1,11 @@
 package pl.memexurer.gaming.cloudnet.packet;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
 import pl.memexurer.gaming.game.GameModifiers;
 import pl.memexurer.gaming.game.generic.GenericGameModifiers;
 
-public class GameCreationRequest extends GameRequest {
+public class GameCreationRequest extends GameRequest{
 
   private GameModifiers modifiers;
 
@@ -21,14 +22,12 @@ public class GameCreationRequest extends GameRequest {
   }
 
   @Override
-  public void write(ProtocolBuffer buffer) {
-    super.write(buffer);
-    buffer.writeObject(modifiers);
+  public void writeData(DataBuf.Mutable dataBuf) {
+    dataBuf.writeObject(modifiers);
   }
 
   @Override
-  public void read(ProtocolBuffer buffer) {
-    super.read(buffer);
-    this.modifiers = buffer.readObject(GenericGameModifiers.class);
+  public void readData(DataBuf dataBuf) {
+    this.modifiers = dataBuf.readObject(GenericGameModifiers.class);
   }
 }

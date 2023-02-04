@@ -2,11 +2,11 @@ package pl.memexurer.gaming;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import de.dytanic.cloudnet.ext.bridge.velocity.event.VelocityChannelMessageReceiveEvent;
 import java.util.function.Function;
+
+import eu.cloudnetservice.driver.event.events.channel.ChannelMessageReceiveEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -26,9 +26,9 @@ public class GamingVelocityPlugin {
   private ProxyServer server;
 
   @Subscribe // player forwarding for servers managed by this plugin
-  public void onMessage(VelocityChannelMessageReceiveEvent event) {
-    if (event.getChannel().equals(PlayerGameJoinPacket.CHANNEL)) {
-      var packet = event.getBuffer().readObject(PlayerGameJoinPacket.class);
+  public void onMessage(ChannelMessageReceiveEvent event) {
+    if (event.channel().equals(PlayerGameJoinPacket.CHANNEL)) {
+      var packet = event.content().readObject(PlayerGameJoinPacket.class);
       var player = server.getPlayer(packet.getUuid()).orElseThrow();
       player.sendMessage(
           Component.text("Dobra czekaj, probujemy cie przerzucic do giery...", Style.style(
@@ -39,7 +39,7 @@ public class GamingVelocityPlugin {
               party1.getOwner(),
               party1.getMembers().stream().map(PartyMember::uuid).toList()))
           .orElse(new PlayerIdentification(packet.getUuid()));
-      ManagedServer.createConnectionRequest(packet.getServerId(), packet.getGameId(), id)
+      ManagedServer.createConnectionReques(packet.getServerId(), packet.getGameId(), id)
           .whenComplete(
               (unused, throwable) -> {
                 if (throwable != null) {
@@ -51,10 +51,10 @@ public class GamingVelocityPlugin {
   }
 
   @Subscribe // player forwarding for servers managed by this plugin
-  public void onSendMessage(VelocityChannelMessageReceiveEvent event) {
-    if (event.getChannel().equals("rejoin_player")) {
-      server.getPlayer(event.getBuffer().readUUID()).orElseThrow()
-          .createConnectionRequest(server.getServer(event.getBuffer().readString()).orElseThrow())
+  public void onSendMessage(ChannelMessageReceiveEvent event) {
+    if (event.channel().equals("rejoin_player")) {
+      server.getPlayer(event.content().readUniqueId()).orElseThrow()
+          .createConnectionRequest(server.getServer(event.content().readString()).orElseThrow())
           .fireAndForget();
     }
   }

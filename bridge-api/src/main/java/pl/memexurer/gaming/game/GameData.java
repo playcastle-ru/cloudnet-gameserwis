@@ -1,7 +1,7 @@
 package pl.memexurer.gaming.game;
 
-import de.dytanic.cloudnet.driver.serialization.SerializableObject;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
 
-public interface GameData extends SerializableObject {
+public interface GameData extends DataBufable {
 
 }

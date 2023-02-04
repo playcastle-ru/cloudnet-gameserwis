@@ -1,10 +1,10 @@
 package pl.memexurer.gaming.game.generic;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import de.dytanic.cloudnet.driver.serialization.SerializableObject;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
 import pl.memexurer.gaming.game.GameModifiers;
 
-public final class GenericGameModifiers implements GameModifiers, SerializableObject {
+public final class GenericGameModifiers implements GameModifiers, DataBufable {
 
   private String mapName;
 
@@ -20,12 +20,12 @@ public final class GenericGameModifiers implements GameModifiers, SerializableOb
   }
 
   @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeString(mapName);
+  public void writeData(DataBuf.Mutable dataBuf) {
+    dataBuf.writeString(mapName);
   }
 
   @Override
-  public void read(ProtocolBuffer buffer) {
-    this.mapName = buffer.readString();
+  public void readData(DataBuf dataBuf) {
+    this.mapName = dataBuf.readString();
   }
 }

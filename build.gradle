@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group 'pl.playcastle'
-    version '1.0-SNAPSHOT'
+    version '2.0-SNAPSHOT'
 
     apply plugin: "java-library"
     apply plugin: "com.github.johnrengelman.shadow"
@@ -13,18 +13,16 @@ allprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven { url 'https://repo.cloudnetservice.eu/repository/releases/' }
     }
 
     dependencies {
-        compileOnly 'de.dytanic.cloudnet:cloudnet-driver:3.4+'
-        compileOnly 'de.dytanic.cloudnet:cloudnet-bridge:3.4+'
-        compileOnly 'de.dytanic.cloudnet:cloudnet:3.4+'
+        compileOnly 'eu.cloudnetservice.cloudnet:driver:4+'
+        compileOnly 'eu.cloudnetservice.cloudnet:bridge:4+'
     }
 
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(16)
+            languageVersion = JavaLanguageVersion.of(17)
         }
     }
 }

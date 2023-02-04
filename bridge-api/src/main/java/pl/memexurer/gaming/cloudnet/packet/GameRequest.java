@@ -1,9 +1,9 @@
 package pl.memexurer.gaming.cloudnet.packet;
 
-import de.dytanic.cloudnet.driver.serialization.ProtocolBuffer;
-import de.dytanic.cloudnet.driver.serialization.SerializableObject;
+import eu.cloudnetservice.driver.network.buffer.DataBuf;
+import eu.cloudnetservice.driver.network.buffer.DataBufable;
 
-public abstract class GameRequest implements SerializableObject {
+public abstract class GameRequest implements DataBufable {
   private String gameId;
 
   public GameRequest() {
@@ -18,12 +18,12 @@ public abstract class GameRequest implements SerializableObject {
   }
 
   @Override
-  public void write(ProtocolBuffer buffer) {
-    buffer.writeString(gameId);
+  public void writeData(DataBuf.Mutable dataBuf) {
+    dataBuf.writeString(gameId);
   }
 
   @Override
-  public void read(ProtocolBuffer buffer) {
-    this.gameId = buffer.readString();
+  public void readData(DataBuf dataBuf) {
+    this.gameId = dataBuf.readString();
   }
 }
