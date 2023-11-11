@@ -37,7 +37,7 @@ public class GamingModule extends DefaultModule {
             if (gameDatabase.getAllGames().stream()
                     .filter(game -> game.gameData() instanceof GenericGameData)
                     .noneMatch(game -> ((GenericGameData) game.gameData()).getGameState() == GenericGameState.WAITING)) {
-                serverPool.createGame(new GenericGameModifiers("nigger")).whenComplete(
+                serverPool.createGame(new GenericGameModifiers("ohyeah")).whenComplete(
                         (game, throwable) -> {
                             if (throwable != null) {
                                 logger.error("Blad podczas tworzenia giery", throwable);
